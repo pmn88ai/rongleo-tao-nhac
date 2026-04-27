@@ -1,0 +1,14 @@
+# ENV (QUAN TRỌNG)
+.env
+.env.local
+.env.*
+
+# Node (nếu sau này có)
+node_modules/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

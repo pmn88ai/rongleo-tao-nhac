@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>🎵 AI Music Studio</title>
+  <style>
+    /* ==============================
+       RESET & BIẾN CSS
+    ============================== */
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #ede9fe;
+      --bg2: #f5f3ff;
+      --card: #ffffff;
+      --primary: #7c3aed;
+      --primary-lt: #ede9fe;
+      --primary-dk: #5b21b6;
+      --green: #059669;
+      --green-lt: #d1fae5;
+      --green-dk: #047857;
+      --amber: #d97706;
+      --amber-lt: #fef3c7;
+      --text: #1e1b4b;
+      --text-sm: #6b7280;
+      --border: #ddd6fe;
+      --shadow: rgba(124, 58, 237, .12);
+      --radius: 16px;
+      --radius-sm: 10px;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+      font-size: 17px;
+      background: linear-gradient(160deg, var(--bg) 0%, var(--bg2) 100%);
+      min-height: 100vh;
+      color: var(--text);
+    }
+
+    /* ==============================
+       HEADER
+    ============================== */
+    header {
+      background: linear-gradient(135deg, #7c3aed 0%, #4f46e5 100%);
+      color: #fff;
+      padding: 28px 20px 24px;
+      text-align: center;
+    }
+
+    header h1 {
+      font-size: 2.1rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      opacity: .85;
+      margin-top: 6px;
+    }
+
+    /* ==============================
+       LAYOUT
+    ============================== */
+    .container {
+      max-width: 680px;
+      margin: 0 auto;
+      padding: 22px 16px 60px;
+    }
+
+    /* ==============================
+       CARD
+    ============================== */
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 24px var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* ==============================
+       FORM ELEMENTS
+    ============================== */
+    label {
+      display: block;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    textarea,
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 13px 14px;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      font-size: 1rem;
+      font-family: inherit;
+      color: var(--text);
+      background: #faf9ff;
+      resize: vertical;
+      transition: border-color .2s, box-shadow .2s;
+    }
+
+    textarea:focus,
+    input:focus {
+      outline: none;
+      border-color: var(--primary);
+      background: #fff;
+      box-shadow: 0 0 0 3px rgba(124, 58, 237, .12);
+    }
+
+    textarea {
+      min-height: 90px;
+    }
+
+    /* ==============================
+       BUTTONS
+    ============================== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 1.05rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .18s, transform .1s, box-shadow .18s;
+      width: 100%;
+      min-height: 52px;
+    }
+
+    .btn:active {
+      transform: scale(.97);
+    }
+
+    .btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #fff;
+      margin-top: 14px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--primary-dk);
+    }
+
+    .btn-soft {
+      background: var(--primary-lt);
+      color: var(--primary);
+      margin-top: 0;
+    }
+
+    .btn-soft:hover:not(:disabled) {
+      background: #ddd6fe;
+    }
+
+    .btn-outline {
+      background: #fff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      margin-top: 0;
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background: var(--primary-lt);
+    }
+
+    .btn-sm {
+      padding: 10px 16px;
+      font-size: .95rem;
+      min-height: 42px;
+      width: auto;
+      margin-top: 10px;
+    }
+
+    /* Nút 2 cột */
+    .btn-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    /* ==============================
+       LOADING SPINNER
+    ============================== */
+    .loading {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 0 4px;
+      color: var(--primary);
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .loading.active {
+      display: flex;
+    }
+
+    .spinner {
+      width: 22px;
+      height: 22px;
+      border: 3px solid var(--primary-lt);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin .75s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* ==============================
+       CHORDS TOGGLE
+    ============================== */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .toggle-row input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      cursor: pointer;
+      accent-color: var(--primary);
+    }
+
+    .toggle-row span {
+      font-size: 1.05rem;
+      font-weight: 600;
+    }
+
+    /* ==============================
+       GENERATE MUSIC CARDS
+    ============================== */
+    .music-cards {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .music-card {
+      border-radius: 14px;
+      padding: 20px 14px;
+      text-align: center;
+      color: #fff;
+      cursor: pointer;
+      border: none;
+      transition: transform .18s, box-shadow .18s;
+    }
+
+    .music-card:hover {
+      transform: translateY(-3px);
+    }
+
+    .music-card:active {
+      transform: scale(.97);
+    }
+
+    .music-card.suno {
+      background: linear-gradient(140deg, #7c3aed, #4f46e5);
+    }
+
+    .music-card.suno:hover {
+      box-shadow: 0 10px 28px rgba(124, 58, 237, .4);
+    }
+
+    .music-card.udio {
+      background: linear-gradient(140deg, #059669, #0d9488);
+    }
+
+    .music-card.udio:hover {
+      box-shadow: 0 10px 28px rgba(5, 150, 105, .4);
+    }
+
+    .music-card-icon {
+      font-size: 2.4rem;
+      margin-bottom: 8px;
+    }
+
+    .music-card h3 {
+      font-size: 1.25rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+    }
+
+    .music-card p {
+      font-size: .85rem;
+      opacity: .82;
+      margin-bottom: 14px;
+    }
+
+    .mc-btn {
+      background: rgba(255, 255, 255, .18);
+      color: #fff;
+      border: 2px solid rgba(255, 255, 255, .55);
+      border-radius: 9px;
+      padding: 10px 14px;
+      font-size: .95rem;
+      font-weight: 700;
+      width: 100%;
+      cursor: pointer;
+      transition: background .18s;
+    }
+
+    .mc-btn:hover {
+      background: rgba(255, 255, 255, .32);
+    }
+
+    /* ==============================
+       TIP BOX
+    ============================== */
+    .tip {
+      background: var(--green-lt);
+      border-left: 4px solid var(--green);
+      border-radius: 8px;
+      padding: 13px 16px;
+      font-size: .95rem;
+      color: #065f46;
+      margin-top: 18px;
+      line-height: 1.5;
+    }
+
+    /* ==============================
+       TOAST
+    ============================== */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(120px);
+      background: #1e1b4b;
+      color: #fff;
+      padding: 13px 26px;
+      border-radius: 50px;
+      font-size: 1rem;
+      font-weight: 600;
+      z-index: 9999;
+      transition: transform .3s cubic-bezier(.34, 1.56, .64, 1);
+      white-space: nowrap;
+      max-width: 90vw;
+      text-align: center;
+      pointer-events: none;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ==============================
+       READY STATUS
+    ============================== */
+    .ready-status {
+      display: none;
+      align-items: center;
+      gap: 10px;
+      background: var(--green-lt);
+      border: 2px solid var(--green);
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      font-size: 1rem;
+      font-weight: 700;
+      color: #065f46;
+      margin-bottom: 16px;
+    }
+
+    .ready-status.visible {
+      display: flex;
+    }
+
+    /* ==============================
+       RESPONSIVE
+    ============================== */
+    @media (max-width: 500px) {
+      header h1 {
+        font-size: 1.65rem;
+      }
+
+      .music-cards {
+        grid-template-columns: 1fr;
+      }
+
+      .btn-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <h1>🎵 AI Music Studio</h1>
+    <p>Sáng tác bài hát của bạn cùng trí tuệ nhân tạo</p>
+  </header>
+
+  <!-- Toast thông báo -->
+  <div class="toast" id="toast"></div>
+
+  <div class="container">
+
+    <!-- ============================
+       Ý TƯỞNG
+  ============================= -->
+    <div class="card">
+      <div class="card-title">💡 Ý Tưởng Bài Hát</div>
+      <label for="ideaInput">Mô tả ý tưởng bài hát của bạn:</label>
+      <textarea id="ideaInput" rows="4"
+        placeholder="Ví dụ: Bài hát về quê hương, nỗi nhớ tuổi thơ, dòng sông xanh và cánh đồng lúa chín vàng..."></textarea>
+      <div class="loading" id="lyricsLoading">
+        <span class="spinner"></span> Đang tạo lời bài hát, vui lòng chờ...
+      </div>
+      <button class="btn btn-primary" id="btnGenLyrics" onclick="generateLyrics()">
+        📝 Tạo Lời Bài Hát
+      </button>
+    </div>
+
+    <!-- ============================
+       LỜI BÀI HÁT
+  ============================= -->
+    <div class="card">
+      <div class="card-title">📜 Lời Bài Hát</div>
+
+      <!-- Tựa bài hát — tự điền khi AI tạo lời, có thể sửa tay -->
+      <label for="songTitle">🎤 Tựa bài hát:</label>
+      <input type="text" id="songTitle" placeholder="Tên bài hát sẽ tự điền sau khi tạo lời..."
+        style="margin-bottom:16px;" />
+
+      <label for="lyricsOutput">Lời bài hát (có thể chỉnh sửa tự do):</label>
+      <textarea id="lyricsOutput" rows="11"
+        placeholder="Lời bài hát sẽ hiện ở đây sau khi bạn bấm 'Tạo Lời Bài Hát' ở trên..."></textarea>
+
+      <div class="btn-row">
+        <button class="btn btn-soft" id="btnRewrite" onclick="rewriteLyrics()">
+          🔄 Viết Lại Lời
+        </button>
+        <button class="btn btn-outline" onclick="copyLyrics()">
+          📋 Copy Lời
+        </button>
+      </div>
+      <!-- Viết tiếp từ đoạn cuối -->
+      <button class="btn btn-soft" id="btnContinue" onclick="continueLyrics()" style="margin-top:10px;">
+        ✍️ Viết Tiếp Đoạn Này
+      </button>
+    </div>
+
+    <!-- ============================
+       GIAI ĐIỆU
+  ============================= -->
+    <div class="card">
+      <div class="card-title">🎼 Giai Điệu & Phong Cách</div>
+      <label for="styleInput">Mô tả phong cách nhạc mong muốn:</label>
+      <input type="text" id="styleInput" placeholder="Ví dụ: bolero buồn nhẹ nhàng, tempo chậm 70 BPM, lãng mạn..." />
+      <div class="loading" id="melodyLoading">
+        <span class="spinner"></span> Đang gợi ý giai điệu...
+      </div>
+      <button class="btn btn-primary" id="btnGenMelody" onclick="generateMelody()">
+        🎵 Gợi Ý Giai Điệu
+      </button>
+      <label for="melodyOutput" style="margin-top:18px;">Thông tin giai điệu (có thể chỉnh sửa):</label>
+      <textarea id="melodyOutput" rows="6" placeholder="Thông tin giai điệu sẽ hiện ở đây..."></textarea>
+    </div>
+
+    <!-- ============================
+       HỢP ÂM
+  ============================= -->
+    <div class="card">
+      <div class="card-title">🎸 Hợp Âm (Tuỳ Chọn)</div>
+      <label class="toggle-row">
+        <input type="checkbox" id="chordsToggle" onchange="toggleChords()" />
+        <span>Thêm hợp âm vào bài hát</span>
+      </label>
+
+      <div id="chordsContent" style="display:none; margin-top:18px;">
+        <div class="loading" id="chordsLoading">
+          <span class="spinner"></span> Đang gợi ý hợp âm...
+        </div>
+        <button class="btn btn-primary" id="btnGenChords" onclick="generateChords()">
+          🎸 Gợi Ý Hợp Âm
+        </button>
+        <label for="chordsOutput" style="margin-top:18px;">Hợp âm (có thể chỉnh sửa):</label>
+        <textarea id="chordsOutput" rows="7"
+          placeholder="Hợp âm sẽ hiện ở đây...&#10;&#10;Ví dụ:&#10;[Verse]&#10;Am - Dm - G - C&#10;&#10;[Chorus]&#10;F - G - Em - Am"></textarea>
+      </div>
+    </div>
+
+    <!-- ============================
+       TẠO NHẠC
+  ============================= -->
+    <div class="card">
+      <div class="card-title">🚀 Tạo Nhạc</div>
+
+      <!-- Hiển thị khi đã có lyrics — cập nhật bởi updateReadyStatus() -->
+      <div class="ready-status" id="readyStatus">
+        ✅ Bài hát đã sẵn sàng tạo nhạc!
+      </div>
+
+      <p style="color:var(--text-sm); font-size:1rem; line-height:1.5;">
+        Bấm vào nút bên dưới → Nội dung tự động copy → Trang web mở ra → Dán vào để tạo nhạc!
+      </p>
+
+      <div class="music-cards">
+        <!-- Suno -->
+        <div class="music-card suno" onclick="generateMusic('suno')">
+          <div class="music-card-icon">🎵</div>
+          <h3>SUNO</h3>
+          <p>AI tạo nhạc hàng đầu thế giới</p>
+          <button class="mc-btn">🚀 Tạo bằng Suno</button>
+        </div>
+
+        <!-- Udio -->
+        <div class="music-card udio" onclick="generateMusic('udio')">
+          <div class="music-card-icon">🎶</div>
+          <h3>UDIO</h3>
+          <p>Tạo nhạc chất lượng cao</p>
+          <button class="mc-btn">🎶 Tạo bằng Udio</button>
+        </div>
+      </div>
+
+      <div class="tip">
+        💡 <strong>Hướng dẫn nhanh:</strong><br />
+        1. Tạo lời → 2. Gợi ý giai điệu → 3. Bấm Suno hoặc Udio<br />
+        Nội dung sẽ tự copy, chỉ cần dán (Ctrl+V) vào trang là xong!
+      </div>
+    </div>
+
+  </div><!-- /container -->
+
+  <script>
+    // ============================================================
+    // KHỞI ĐỘNG — load dữ liệu đã lưu
+    // ============================================================
+    (function init() {
+      const get = k => localStorage.getItem(k) || '';
+      const set = (id, k) => { const v = get(k); if (v) document.getElementById(id).value = v; };
+      set('ideaInput', 'music_idea');
+      set('songTitle', 'music_title');   // tựa bài hát
+      set('lyricsOutput', 'music_lyrics');
+      set('styleInput', 'music_style');
+      set('melodyOutput', 'music_melody');
+      set('chordsOutput', 'music_chords');
+
+      if (localStorage.getItem('chords_on') === '1') {
+        document.getElementById('chordsToggle').checked = true;
+        document.getElementById('chordsContent').style.display = 'block';
+      }
+
+      // Auto-save khi người dùng gõ
+      const autoSave = [
+        ['ideaInput', 'music_idea'],
+        ['songTitle', 'music_title'],   // auto-save tựa bài hát
+        ['lyricsOutput', 'music_lyrics'],
+        ['styleInput', 'music_style'],
+        ['melodyOutput', 'music_melody'],
+        ['chordsOutput', 'music_chords'],
+      ];
+      autoSave.forEach(([id, key]) => {
+        document.getElementById(id).addEventListener('input', () => {
+          localStorage.setItem(key, document.getElementById(id).value);
+          // Cập nhật trạng thái sẵn sàng khi người dùng chỉnh lyrics tay
+          if (id === 'lyricsOutput') updateReadyStatus();
+        });
+      });
+
+      // Kiểm tra trạng thái ngay khi load xong
+      updateReadyStatus();
+    })();
+
+    // ============================================================
+    // GỌI GROQ QUA BACKEND /api/groq
+    // ============================================================
+    async function callGroq(messages, loadingId, btnId) {
+      const loading = document.getElementById(loadingId);
+      const btn     = btnId ? document.getElementById(btnId) : null;
+
+      loading.classList.add('active');
+      if (btn) btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/groq', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages }),
+        });
+
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.error || `Lỗi HTTP ${res.status}`);
+        }
+
+        const data = await res.json();
+        return data.content;
+      } catch (e) {
+        showToast('❌ Lỗi: ' + e.message);
+        return null;
+      } finally {
+        loading.classList.remove('active');
+        if (btn) btn.disabled = false;
+      }
+    }
+
+    // ============================================================
+    // 1. TẠO LỜI BÀI HÁT
+    // ============================================================
+    async function generateLyrics() {
+      const idea = document.getElementById('ideaInput').value.trim();
+      if (!idea) { showToast('⚠️ Vui lòng nhập ý tưởng trước!'); return; }
+
+      const result = await callGroq([{
+        role: 'user',
+        content: `Bạn là nhạc sĩ chuyên viết lời nhạc Việt. Hãy sáng tác lời bài hát tiếng Việt dựa trên ý tưởng sau:
+
+Ý tưởng: ${idea}
+
+Yêu cầu:
+- Trả về đúng định dạng bên dưới, không giải thích thêm
+- Tựa bài hát ngắn gọn, hay, gợi cảm
+- Cấu trúc lời: [Verse 1], [Chorus], [Verse 2], [Chorus], [Bridge] (nếu phù hợp), [Chorus]
+- Lời thơ có vần điệu tự nhiên, giàu cảm xúc và hình ảnh
+- Tiếng Việt chuẩn, trong sáng
+
+Định dạng bắt buộc:
+
+[Title]
+Tên bài hát
+
+[Lyrics]
+(lời bài hát)`
+      }], 'lyricsLoading', 'btnGenLyrics');
+
+      if (result) {
+        // Tách tiêu đề và lời ra từ response
+        const { title, lyrics } = parseTitleAndLyrics(result);
+        if (title) {
+          document.getElementById('songTitle').value = title;
+          localStorage.setItem('music_title', title);
+        }
+        document.getElementById('lyricsOutput').value = lyrics;
+        localStorage.setItem('music_lyrics', lyrics);
+        updateReadyStatus();
+        showToast('✅ Đã tạo lời bài hát!');
+      }
+    }
+
+    // Tách title và lyrics từ response AI — hỗ trợ nhiều format khác nhau
+    function parseTitleAndLyrics(raw) {
+      const text = raw.trim();
+
+      // --- Format 1: [Title] ... [Lyrics] ---
+      const bracketTitle = text.match(/\[Title\]\s*\n([\s\S]*?)(?=\n\[Lyrics\])/i);
+      const bracketLyrics = text.match(/\[Lyrics\]\s*\n([\s\S]*)/i);
+      if (bracketTitle && bracketLyrics) {
+        return { title: bracketTitle[1].trim(), lyrics: bracketLyrics[1].trim() };
+      }
+
+      // --- Format 2: Title: xxx \n Lyrics: ... ---
+      const colonTitle = text.match(/^Title:\s*(.+)/im);
+      const colonLyrics = text.match(/Lyrics:\s*\n([\s\S]*)/i);
+      if (colonTitle) {
+        const title = colonTitle[1].trim();
+        const lyrics = colonLyrics
+          ? colonLyrics[1].trim()
+          : text.replace(/^Title:.+\n?/im, '').trim();
+        return { title, lyrics };
+      }
+
+      // --- Format 3: chỉ có [Lyrics], không có [Title] ---
+      if (bracketLyrics) {
+        return { title: '', lyrics: bracketLyrics[1].trim() };
+      }
+
+      // --- Fallback: dòng đầu < 60 ký tự và không phải tag → làm title ---
+      const lines = text.split('\n').map(l => l.trim()).filter(Boolean);
+      if (lines.length > 1 && lines[0].length < 60 && !lines[0].startsWith('[')) {
+        return { title: lines[0], lyrics: lines.slice(1).join('\n').trim() };
+      }
+
+      // Không tách được — trả toàn bộ làm lyrics, title trống
+      return { title: '', lyrics: text };
+    }
+
+    // ============================================================
+    // 2. VIẾT LẠI LỜI
+    // ============================================================
+    async function rewriteLyrics() {
+      const current = document.getElementById('lyricsOutput').value.trim();
+      const idea = document.getElementById('ideaInput').value.trim();
+
+      if (!current && !idea) {
+        showToast('⚠️ Vui lòng tạo lời hoặc nhập ý tưởng trước!');
+        return;
+      }
+
+      const result = await callGroq([{
+        role: 'user',
+        content: `Bạn là nhạc sĩ chuyên viết lời nhạc Việt. Hãy viết lại lời bài hát bên dưới theo hướng sáng tạo hơn, dùng từ ngữ và hình ảnh khác nhưng giữ nguyên cảm xúc và chủ đề:
+
+${current || `Chủ đề: ${idea}`}
+
+Yêu cầu:
+- Giữ cấu trúc [Verse], [Chorus]
+- Lời mới khác biệt, không lặp từ cũ
+- Tiếng Việt chuẩn, có vần điệu
+- Chỉ xuất lời bài hát, không giải thích
+
+Viết lại:`
+      }], 'lyricsLoading', 'btnRewrite');
+
+      if (result) {
+        document.getElementById('lyricsOutput').value = result;
+        localStorage.setItem('music_lyrics', result);
+        updateReadyStatus();
+        showToast('✅ Đã viết lại lời bài hát!');
+      }
+    }
+
+    // ============================================================
+    // 3. COPY LỜI RIÊNG
+    // ============================================================
+    function copyLyrics() {
+      const lyrics = document.getElementById('lyricsOutput').value.trim();
+      if (!lyrics) { showToast('⚠️ Chưa có lời bài hát để copy!'); return; }
+      navigator.clipboard.writeText(lyrics)
+        .then(() => showToast('📋 Đã copy lời bài hát!'))
+        .catch(() => showToast('❌ Không copy được, thử lại sau.'));
+    }
+
+    // ============================================================
+    // 4. GỢI Ý GIAI ĐIỆU
+    // ============================================================
+    async function generateMelody() {
+      const style = document.getElementById('styleInput').value.trim();
+      if (!style) { showToast('⚠️ Vui lòng nhập phong cách nhạc!'); return; }
+
+      const result = await callGroq([{
+        role: 'user',
+        content: `Bạn là nhà sản xuất âm nhạc chuyên nghiệp. Dựa trên phong cách "${style}", đề xuất thông tin giai điệu chi tiết cho bài hát tiếng Việt.
+
+Trả lời đúng định dạng sau (tiếng Việt, ngắn gọn):
+
+🎵 Tempo: [số BPM + mô tả ngắn]
+🎭 Thể loại: [thể loại + phong cách cụ thể]
+🎸 Nhạc cụ: [liệt kê 4–6 nhạc cụ chính]
+🌟 Cảm xúc: [mood, không khí bài hát]
+🎼 Ghi chú: [mô tả thêm về âm thanh, sản xuất]`
+      }], 'melodyLoading', 'btnGenMelody');
+
+      if (result) {
+        document.getElementById('melodyOutput').value = result;
+        localStorage.setItem('music_melody', result);
+        showToast('✅ Đã gợi ý giai điệu!');
+      }
+    }
+
+    // ============================================================
+    // 5. BẬT/TẮT HỢP ÂM
+    // ============================================================
+    function toggleChords() {
+      const on = document.getElementById('chordsToggle').checked;
+      document.getElementById('chordsContent').style.display = on ? 'block' : 'none';
+      localStorage.setItem('chords_on', on ? '1' : '0');
+    }
+
+    // ============================================================
+    // 6. GỢI Ý HỢP ÂM
+    // ============================================================
+    async function generateChords() {
+      const lyrics = document.getElementById('lyricsOutput').value.trim();
+      const style = document.getElementById('styleInput').value.trim();
+      const melody = document.getElementById('melodyOutput').value.trim();
+
+      const ctx = [
+        style && `Phong cách: ${style}`,
+        melody && `Giai điệu:\n${melody}`,
+        lyrics && `Lời bài hát (trích):\n${lyrics.slice(0, 600)}`,
+      ].filter(Boolean).join('\n\n');
+
+      const result = await callGroq([{
+        role: 'user',
+        content: `Bạn là nhạc sĩ chuyên về hoà âm nhạc Việt. Gợi ý hợp âm cho bài hát với thông tin:
+
+${ctx || 'Bài hát nhạc Việt thông thường'}
+
+Trả lời đúng định dạng (chỉ hợp âm, không giải thích):
+
+[Intro]
+...
+
+[Verse]
+...
+
+[Chorus]
+...
+
+[Bridge]
+...
+
+[Outro]
+...`
+      }], 'chordsLoading', 'btnGenChords');
+
+      if (result) {
+        document.getElementById('chordsOutput').value = result;
+        localStorage.setItem('music_chords', result);
+        showToast('✅ Đã gợi ý hợp âm!');
+      }
+    }
+
+    // ============================================================
+    // 7. TẠO NHẠC (SUNO / UDIO)
+    // ============================================================
+    function generateMusic(platform) {
+      const lyrics = document.getElementById('lyricsOutput').value.trim();
+      const melody = document.getElementById('melodyOutput').value.trim();
+      const title = document.getElementById('songTitle').value.trim();
+      const chordsOn = document.getElementById('chordsToggle').checked;
+      const chords = document.getElementById('chordsOutput').value.trim();
+
+      // Bắt buộc phải có lời bài hát
+      if (!lyrics) {
+        showToast('⚠️ Vui lòng tạo lời bài hát trước!');
+        return;
+      }
+
+      // Prompt chuyên nghiệp, tối ưu cho Suno & Udio
+      const parts = [
+        'A high-quality Vietnamese song with emotional vocals.',
+        'Clear structure, expressive singing, studio-quality production.',
+        'Genre: Vietnamese bolero / pop / ballad depending on style.',
+      ];
+      if (title) parts.push(`Title: ${title}`);
+      if (melody) parts.push(`Style:\n${cleanText(melody)}`);
+      parts.push(`Lyrics:\n${lyrics}`);
+      if (chordsOn && chords) parts.push(`Chords:\n${chords}`);
+
+      const fullPrompt = parts.join('\n\n');
+
+      const urls = {
+        suno: 'https://app.suno.ai/',
+        udio: 'https://www.udio.com/',
+      };
+
+      navigator.clipboard.writeText(fullPrompt)
+        .then(() => {
+          window.open(urls[platform], '_blank', 'noopener');
+          // Đợi 300ms để tab mới mở xong trước khi hiện hướng dẫn
+          setTimeout(() => {
+            alert('Đã copy nội dung.\n\n1. Dán vào ô\n2. Bấm Create\n3. Chờ vài giây sẽ có nhạc');
+          }, 300);
+        })
+        .catch(() => {
+          // Fallback mobile: dùng prompt() để người dùng tự copy
+          window.open(urls[platform], '_blank', 'noopener');
+          setTimeout(() => prompt('Copy toàn bộ nội dung bên dưới rồi dán vào trang:', fullPrompt), 600);
+        });
+    }
+
+    // ============================================================
+    // CLEAN TEXT — xoá emoji và ký tự thừa trước khi gửi AI nhạc
+    // ============================================================
+    function cleanText(text) {
+      // Chỉ xoá emoji, giữ nguyên xuống dòng và format
+      return text
+        .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}]/gu, '')
+        .trim();
+    }
+
+    // ============================================================
+    // 8. VIẾT TIẾP LỜI BÀI HÁT
+    // ============================================================
+    async function continueLyrics() {
+      const current = document.getElementById('lyricsOutput').value.trim();
+      if (!current) {
+        showToast('⚠️ Chưa có lời bài hát để viết tiếp!');
+        return;
+      }
+
+      // Lấy ~250 ký tự cuối làm ngữ cảnh để AI nối tự nhiên
+      const tail = current.slice(-250);
+
+      const result = await callGroq([{
+        role: 'user',
+        content: `Tiếp tục lời bài hát sau:
+
+${tail}
+
+Yêu cầu:
+- Giữ nguyên phong cách, cảm xúc, cách gieo vần
+- Giữ cấu trúc đoạn (Verse, Chorus, Bridge…)
+- KHÔNG lặp lại nội dung cũ
+- Viết thêm 1–2 đoạn tiếp theo
+- Tiếng Việt tự nhiên, giàu cảm xúc
+
+Chỉ xuất phần viết tiếp, không giải thích`
+      }], 'lyricsLoading', 'btnContinue');
+
+      if (result) {
+        const updated = current + '\n\n' + result.trim();
+        document.getElementById('lyricsOutput').value = updated;
+        localStorage.setItem('music_lyrics', updated);
+        updateReadyStatus();
+        showToast('✅ Đã viết thêm đoạn mới!');
+      }
+    }
+
+    // ============================================================
+    // TRẠNG THÁI SẴN SÀNG TẠO NHẠC
+    // ============================================================
+    function updateReadyStatus() {
+      const lyrics = document.getElementById('lyricsOutput').value.trim();
+      const el = document.getElementById('readyStatus');
+      el.classList.toggle('visible', lyrics.length > 0);
+    }
+
+    // ============================================================
+    // TOAST THÔNG BÁO
+    // ============================================================
+    let toastTimer = null;
+    function showToast(msg, ms = 3000) {
+      const el = document.getElementById('toast');
+      el.textContent = msg;
+      el.classList.add('show');
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+    }
+  </script>
+</body>
+
+</html>
