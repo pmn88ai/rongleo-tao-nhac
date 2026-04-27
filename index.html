@@ -406,6 +406,140 @@
     }
 
     /* ==============================
+       ACTION BUTTONS ROW (copy / save / export)
+    ============================== */
+    .btn-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .btn-action {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 2px solid transparent;
+      transition: background .15s, transform .1s;
+      flex: 1;
+      min-width: 130px;
+      min-height: 44px;
+    }
+    .btn-action:active { transform: scale(.97); }
+
+    .btn-action-outline {
+      background: #fff;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+    .btn-action-outline:hover { background: var(--primary-lt); }
+
+    .btn-action-green {
+      background: var(--green-lt);
+      color: var(--green-dk);
+      border-color: var(--green);
+    }
+    .btn-action-green:hover { background: #a7f3d0; }
+
+    /* ==============================
+       LỊCH SỬ BÀI HÁT
+    ============================== */
+    .history-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+
+    .history-item {
+      background: #faf9ff;
+      border: 2px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 13px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .history-item-info { flex: 1; min-width: 0; }
+
+    .history-item-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .history-item-date {
+      font-size: .8rem;
+      color: var(--text-sm);
+      margin-top: 2px;
+    }
+
+    .history-item-btns {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-history {
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: .85rem;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      transition: background .15s;
+      white-space: nowrap;
+    }
+    .btn-history-load { background: var(--primary-lt); color: var(--primary); }
+    .btn-history-load:hover { background: #ddd6fe; }
+    .btn-history-del  { background: #fee2e2; color: #dc2626; }
+    .btn-history-del:hover  { background: #fecaca; }
+
+    .history-empty {
+      text-align: center;
+      color: var(--text-sm);
+      padding: 20px 0;
+      font-size: .95rem;
+    }
+
+    .history-item.active {
+      border-color: var(--primary);
+      background: var(--primary-lt);
+    }
+
+    .badge-editing {
+      display: inline-block;
+      font-size: .75rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: #fff;
+      border: 1.5px solid var(--primary);
+      border-radius: 20px;
+      padding: 1px 8px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .preview {
+      font-size: .88rem;
+      color: var(--text-sm);
+      margin-top: 3px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* ==============================
        RESPONSIVE
     ============================== */
     @media (max-width: 500px) {
@@ -496,6 +630,11 @@
       </button>
       <label for="melodyOutput" style="margin-top:18px;">Thông tin giai điệu (có thể chỉnh sửa):</label>
       <textarea id="melodyOutput" rows="6" placeholder="Thông tin giai điệu sẽ hiện ở đây..."></textarea>
+      <div class="btn-action-row">
+        <button class="btn-action btn-action-outline" onclick="copyMelody()">
+          📋 Copy Giai Điệu
+        </button>
+      </div>
     </div>
 
     <!-- ============================
@@ -518,6 +657,11 @@
         <label for="chordsOutput" style="margin-top:18px;">Hợp âm (có thể chỉnh sửa):</label>
         <textarea id="chordsOutput" rows="7"
           placeholder="Hợp âm sẽ hiện ở đây...&#10;&#10;Ví dụ:&#10;[Verse]&#10;Am - Dm - G - C&#10;&#10;[Chorus]&#10;F - G - Em - Am"></textarea>
+        <div class="btn-action-row" style="margin-top:12px;">
+          <button class="btn-action btn-action-outline" onclick="copyChords()">
+            📋 Copy Hợp Âm
+          </button>
+        </div>
       </div>
     </div>
 
@@ -561,6 +705,37 @@
       </div>
     </div>
 
+    <!-- ============================
+         LƯU & QUẢN LÝ
+    ============================= -->
+    <div class="card">
+      <div class="card-title">💾 Lưu & Quản Lý</div>
+      <div class="btn-action-row">
+        <button class="btn-action btn-action-green" onclick="saveSong()">
+          💾 Lưu Bài Hát
+        </button>
+        <button class="btn-action btn-action-outline" onclick="exportJSON()">
+          ⬇️ Xuất JSON
+        </button>
+        <!-- label bọc input file để style như nút -->
+        <label class="btn-action btn-action-outline" style="cursor:pointer;">
+          ⬆️ Nhập JSON
+          <input type="file" id="importFile" accept=".json"
+            onchange="importJSON(event)" style="display:none;" />
+        </label>
+      </div>
+    </div>
+
+    <!-- ============================
+         BÀI HÁT ĐÃ LƯU
+    ============================= -->
+    <div class="card">
+      <div class="card-title">📚 Bài Hát Đã Lưu</div>
+      <div id="historyList">
+        <p class="history-empty">Chưa có bài hát nào được lưu.</p>
+      </div>
+    </div>
+
   </div><!-- /container -->
 
   <script>
@@ -601,6 +776,7 @@
 
       // Kiểm tra trạng thái ngay khi load xong
       updateReadyStatus();
+      loadHistory();
     })();
 
     // ============================================================
@@ -879,17 +1055,28 @@ Trả lời đúng định dạng (chỉ hợp âm, không giải thích):
 
       navigator.clipboard.writeText(fullPrompt)
         .then(() => {
-          window.open(urls[platform], '_blank', 'noopener');
-          // Đợi 300ms để tab mới mở xong trước khi hiện hướng dẫn
+          openMusicPlatform(platform, urls[platform]);
           setTimeout(() => {
             alert('Đã copy nội dung.\n\n1. Dán vào ô\n2. Bấm Create\n3. Chờ vài giây sẽ có nhạc');
           }, 300);
         })
         .catch(() => {
-          // Fallback mobile: dùng prompt() để người dùng tự copy
-          window.open(urls[platform], '_blank', 'noopener');
+          openMusicPlatform(platform, urls[platform]);
           setTimeout(() => prompt('Copy toàn bộ nội dung bên dưới rồi dán vào trang:', fullPrompt), 600);
         });
+    }
+
+    // Mở Suno / Udio: dùng deep link trên mobile, trình duyệt trên desktop
+    function openMusicPlatform(platform, webUrl) {
+      const isMobile = /Android|iPhone/i.test(navigator.userAgent);
+      if (isMobile) {
+        const deepLinks = { suno: 'suno://', udio: 'udio://' };
+        window.location.href = deepLinks[platform];
+        // Nếu app chưa cài → fallback mở web sau 800ms
+        setTimeout(() => window.open(webUrl, '_blank', 'noopener'), 800);
+      } else {
+        window.open(webUrl, '_blank', 'noopener');
+      }
     }
 
     // ============================================================
@@ -947,6 +1134,171 @@ Chỉ xuất phần viết tiếp, không giải thích`
       const lyrics = document.getElementById('lyricsOutput').value.trim();
       const el = document.getElementById('readyStatus');
       el.classList.toggle('visible', lyrics.length > 0);
+    }
+
+    // ============================================================
+    // COPY TIỆN ÍCH (melody + chords)
+    // ============================================================
+    function copyWithFallback(text, label) {
+      if (!text) { showToast(`⚠️ Chưa có ${label} để copy!`); return; }
+      navigator.clipboard.writeText(text)
+        .then(() => showToast(`📋 Đã copy ${label}!`))
+        .catch(() => prompt(`Copy ${label}:`, text));
+    }
+
+    function copyMelody() {
+      copyWithFallback(document.getElementById('melodyOutput').value.trim(), 'giai điệu');
+    }
+
+    function copyChords() {
+      copyWithFallback(document.getElementById('chordsOutput').value.trim(), 'hợp âm');
+    }
+
+    // ============================================================
+    // LỊCH SỬ BÀI HÁT
+    // ============================================================
+    function getHistory() {
+      try { return JSON.parse(localStorage.getItem('music_history') || '[]'); }
+      catch { return []; }
+    }
+
+    function saveHistory(list) {
+      localStorage.setItem('music_history', JSON.stringify(list));
+    }
+
+    function saveSong() {
+      const title  = document.getElementById('songTitle').value.trim();
+      const lyrics = document.getElementById('lyricsOutput').value.trim();
+      const melody = document.getElementById('melodyOutput').value.trim();
+      const chords = document.getElementById('chordsOutput').value.trim();
+
+      if (!lyrics) { showToast('⚠️ Chưa có lời bài hát để lưu!'); return; }
+
+      const list = getHistory();
+      list.unshift({
+        title:     title || 'Bài hát chưa đặt tên',
+        lyrics, melody, chords,
+        createdAt: new Date().toLocaleString('vi-VN'),
+      });
+      saveHistory(list.slice(0, 50)); // giữ tối đa 50 bài
+      loadHistory();
+      showToast('✅ Đã lưu bài hát!');
+    }
+
+    function loadHistory() {
+      const list = getHistory();
+      const container = document.getElementById('historyList');
+      if (!container) return;
+
+      if (!list.length) {
+        container.innerHTML = '<p class="history-empty">Chưa có bài hát nào được lưu.</p>';
+        return;
+      }
+
+      container.innerHTML = list.map((song, i) => `
+        <div class="history-item">
+          <div class="history-item-info">
+            <div class="history-item-title">${escHtml(song.title)}</div>
+            <div class="history-item-date">${escHtml(song.createdAt || '')}</div>
+          </div>
+          <div class="history-item-btns">
+            <button class="btn-history btn-history-load" onclick="loadSong(${i})">📂 Tải lại</button>
+            <button class="btn-history btn-history-del"  onclick="deleteSong(${i})">❌ Xoá</button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function loadSong(index) {
+      const song = getHistory()[index];
+      if (!song) return;
+
+      // Map field → id → localStorage key
+      const fields = [
+        ['songTitle',    'music_title',  song.title  || ''],
+        ['lyricsOutput', 'music_lyrics', song.lyrics || ''],
+        ['melodyOutput', 'music_melody', song.melody || ''],
+        ['chordsOutput', 'music_chords', song.chords || ''],
+      ];
+      fields.forEach(([id, key, val]) => {
+        document.getElementById(id).value = val;
+        localStorage.setItem(key, val);
+      });
+
+      updateReadyStatus();
+      showToast(`📂 Đã tải: ${song.title}`);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function deleteSong(index) {
+      const list = getHistory();
+      const name = list[index]?.title || 'bài hát này';
+      if (!confirm(`Xoá "${name}"?`)) return;
+      list.splice(index, 1);
+      saveHistory(list);
+      loadHistory();
+      showToast('🗑️ Đã xoá!');
+    }
+
+    // Escape HTML để tránh XSS khi render tên bài từ localStorage
+    function escHtml(str) {
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+
+    // ============================================================
+    // EXPORT / IMPORT JSON
+    // ============================================================
+    function exportJSON() {
+      const data = {
+        title:      document.getElementById('songTitle').value.trim(),
+        lyrics:     document.getElementById('lyricsOutput').value.trim(),
+        melody:     document.getElementById('melodyOutput').value.trim(),
+        chords:     document.getElementById('chordsOutput').value.trim(),
+        exportedAt: new Date().toLocaleString('vi-VN'),
+      };
+
+      if (!data.lyrics) { showToast('⚠️ Chưa có lời bài hát để xuất!'); return; }
+
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url  = URL.createObjectURL(blob);
+      const a    = Object.assign(document.createElement('a'), { href: url, download: `${data.title || 'bai-hat'}-export.json` });
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast('⬇️ Đã xuất file JSON!');
+    }
+
+    function importJSON(event) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const data = JSON.parse(e.target.result);
+          const fields = [
+            ['songTitle',    'music_title',  data.title],
+            ['lyricsOutput', 'music_lyrics', data.lyrics],
+            ['melodyOutput', 'music_melody', data.melody],
+            ['chordsOutput', 'music_chords', data.chords],
+          ];
+          fields.forEach(([id, key, val]) => {
+            if (val) {
+              document.getElementById(id).value = val;
+              localStorage.setItem(key, val);
+            }
+          });
+          updateReadyStatus();
+          showToast('⬆️ Đã nhập bài hát từ file!');
+        } catch {
+          showToast('❌ File JSON không hợp lệ!');
+        }
+        event.target.value = ''; // reset để có thể nhập lại cùng file
+      };
+      reader.readAsText(file);
     }
 
     // ============================================================
