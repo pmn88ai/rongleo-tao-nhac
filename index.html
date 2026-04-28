@@ -730,20 +730,28 @@
       if (btn) btn.disabled = true;
 
       try {
+        console.log('[callGroq] Sending messages:', messages);
+
         const res = await fetch('/api/groq', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages }),
         });
 
+        console.log('[callGroq] Response status:', res.status);
+
         if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.error || `Lỗi HTTP ${res.status}`);
+          const text = await res.text().catch(() => '');
+          console.error('[callGroq] API error:', text);
+          throw new Error(`Lỗi HTTP ${res.status}: ${text.slice(0, 120)}`);
         }
 
         const data = await res.json();
-        return data.content;
+        console.log('[callGroq] Response data:', data);
+
+        return data.content || null;
       } catch (e) {
+        console.error('[callGroq] Exception:', e);
         showToast('❌ Lỗi: ' + e.message);
         return null;
       } finally {
@@ -764,8 +772,8 @@
         general: 'Mọi người — ngôn từ dễ hiểu, tự nhiên, phù hợp nhiều độ tuổi, giai điệu dễ nghe dễ nhớ, tránh slang và từ quá cổ',
         kids: 'Thiếu nhi — ngôn từ đơn giản, vui tươi, dễ nhớ, có vần, chủ đề tích cực, lời nhạc ngắn, lặp lại, dễ hát theo',
         genz: 'Thanh thiếu niên (Gen Z) — hiện đại, tự nhiên, đôi khi đời thường, cảm xúc rõ ràng, văn phong nhạc trẻ trung',
-        middle: 'Trung niên — chững chạc, sâu sắc, thực tế, giàu chiêm nghiệm, văn phong nhạc sâu lắng,
-        elder: 'Người lớn tuổi — trữ tình, hoài niệm, văn phong nhạc xưa, thiết tha',
+        middle: 'Trung niên — chững chạc, sâu sắc, thực tế, giàu chiêm nghiệm, văn phong nhạc sâu lắng',
+        elder:  'Người lớn tuổi — trữ tình, hoài niệm, văn phong nhạc xưa, thiết tha',
       };
       const audienceLine = `\nĐối tượng nghe: ${audienceMap[audience]}`;
 
@@ -792,16 +800,21 @@ Tên bài hát
 (lời bài hát)`
       }], 'lyricsLoading', 'btnGenLyrics');
 
-      if (result) {
-        const { title, lyrics } = parseTitleAndLyrics(result);
-        if (title) {
-          document.getElementById('songTitle').value = title;
-          localStorage.setItem('music_title', title);
-        }
-        document.getElementById('lyricsOutput').value = lyrics;
-        localStorage.setItem('music_lyrics', lyrics);
-        showToast('✅ Đã tạo lời bài hát!');
+      if (!result) return; // lỗi đã được xử lý trong callGroq()
+
+      const { title, lyrics } = parseTitleAndLyrics(result);
+      if (!lyrics) {
+        showToast('⚠️ Không nhận được nội dung từ AI, thử lại!');
+        return;
       }
+      if (title) {
+        document.getElementById('songTitle').value = title;
+        localStorage.setItem('music_title', title);
+      }
+      document.getElementById('lyricsOutput').value = lyrics;
+      localStorage.setItem('music_lyrics', lyrics);
+      autoSaveDebounced();
+      showToast('✅ Đã tạo lời bài hát!');
     }
 
     // Tách title và lyrics từ response AI — hỗ trợ nhiều format khác nhau
