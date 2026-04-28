@@ -281,6 +281,7 @@
       margin-bottom: 14px;
       transition: border-color .2s;
     }
+
     .search-input:focus {
       outline: none;
       border-color: var(--primary);
@@ -339,21 +340,30 @@
       min-width: 130px;
       min-height: 44px;
     }
-    .btn-action:active { transform: scale(.97); }
+
+    .btn-action:active {
+      transform: scale(.97);
+    }
 
     .btn-action-outline {
       background: #fff;
       color: var(--primary);
       border-color: var(--primary);
     }
-    .btn-action-outline:hover { background: var(--primary-lt); }
+
+    .btn-action-outline:hover {
+      background: var(--primary-lt);
+    }
 
     .btn-action-green {
       background: var(--green-lt);
       color: var(--green-dk);
       border-color: var(--green);
     }
-    .btn-action-green:hover { background: #a7f3d0; }
+
+    .btn-action-green:hover {
+      background: #a7f3d0;
+    }
 
     /* ==============================
        LỊCH SỬ BÀI HÁT
@@ -375,7 +385,10 @@
       gap: 10px;
     }
 
-    .history-item-info { flex: 1; min-width: 0; }
+    .history-item-info {
+      flex: 1;
+      min-width: 0;
+    }
 
     .history-item-title {
       font-size: 1rem;
@@ -408,10 +421,24 @@
       transition: background .15s;
       white-space: nowrap;
     }
-    .btn-history-load { background: var(--primary-lt); color: var(--primary); }
-    .btn-history-load:hover { background: #ddd6fe; }
-    .btn-history-del  { background: #fee2e2; color: #dc2626; }
-    .btn-history-del:hover  { background: #fecaca; }
+
+    .btn-history-load {
+      background: var(--primary-lt);
+      color: var(--primary);
+    }
+
+    .btn-history-load:hover {
+      background: #ddd6fe;
+    }
+
+    .btn-history-del {
+      background: #fee2e2;
+      color: #dc2626;
+    }
+
+    .btn-history-del:hover {
+      background: #fecaca;
+    }
 
     .history-empty {
       text-align: center;
@@ -419,6 +446,7 @@
       padding: 20px 0;
       font-size: .95rem;
     }
+
     .empty-state {
       text-align: center;
       color: #9ca3af;
@@ -494,8 +522,10 @@
         placeholder="Ví dụ: Bài hát về quê hương, nỗi nhớ tuổi thơ, dòng sông xanh và cánh đồng lúa chín vàng..."></textarea>
 
       <label for="audience" style="margin-top:14px;">🎯 Đối tượng nghe:</label>
-      <select id="audience" style="width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;font-family:inherit;color:var(--text);background:#faf9ff;appearance:auto;">
+      <select id="audience"
+        style="width:100%;padding:13px 14px;border:2px solid var(--border);border-radius:var(--radius-sm);font-size:1rem;font-family:inherit;color:var(--text);background:#faf9ff;appearance:auto;">
         <option value="">— Chọn đối tượng nghe —</option>
+        <option value="general">🌐 Mọi người</option>
         <option value="kids">🧒 Thiếu nhi</option>
         <option value="genz">🎧 Thanh thiếu niên (Gen Z)</option>
         <option value="middle">👔 Trung niên</option>
@@ -603,11 +633,9 @@
         </button>
         <label class="btn-action btn-action-outline" style="cursor:pointer;">
           ⬆️ Nhập JSON
-          <input type="file" id="importFile" accept=".json"
-            onchange="importJSON(event)" style="display:none;" />
+          <input type="file" id="importFile" accept=".json" onchange="importJSON(event)" style="display:none;" />
         </label>
-        <button class="btn-action" onclick="clearAll()"
-          style="background:#fee2e2;color:#dc2626;border-color:#fca5a5;">
+        <button class="btn-action" onclick="clearAll()" style="background:#fee2e2;color:#dc2626;border-color:#fca5a5;">
           🗑️ Xóa nội dung
         </button>
       </div>
@@ -618,8 +646,7 @@
     ============================= -->
     <div class="card">
       <div class="card-title">📚 Bài Hát Đã Lưu</div>
-      <input type="text" id="searchHistory" class="search-input"
-        placeholder="🔍 Tìm theo tên hoặc lời bài hát..." />
+      <input type="text" id="searchHistory" class="search-input" placeholder="🔍 Tìm theo tên hoặc lời bài hát..." />
       <div id="historyList">
         <p class="history-empty">Chưa có bài hát nào được lưu.</p>
       </div>
@@ -633,7 +660,7 @@
     // ============================================================
     function debounce(fn, delay) {
       let timer;
-      return function(...args) {
+      return function (...args) {
         clearTimeout(timer);
         timer = setTimeout(() => fn.apply(this, args), delay);
       };
@@ -649,10 +676,10 @@
     (function init() {
       const get = k => localStorage.getItem(k) || '';
       const set = (id, k) => { const v = get(k); if (v) document.getElementById(id).value = v; };
-      set('ideaInput',    'music_idea');
-      set('songTitle',    'music_title');
+      set('ideaInput', 'music_idea');
+      set('songTitle', 'music_title');
       set('lyricsOutput', 'music_lyrics');
-      set('styleInput',   'music_style');
+      set('styleInput', 'music_style');
       set('melodyOutput', 'music_melody');
       set('chordsOutput', 'music_chords');
 
@@ -665,12 +692,12 @@
       }
 
       // Các field lưu localStorage + auto-save debounced vào history
-      const contentFields = new Set(['ideaInput','songTitle','lyricsOutput','melodyOutput','chordsOutput']);
+      const contentFields = new Set(['ideaInput', 'songTitle', 'lyricsOutput', 'melodyOutput', 'chordsOutput']);
       const autoSave = [
-        ['ideaInput',    'music_idea'],
-        ['songTitle',    'music_title'],
+        ['ideaInput', 'music_idea'],
+        ['songTitle', 'music_title'],
         ['lyricsOutput', 'music_lyrics'],
-        ['styleInput',   'music_style'],
+        ['styleInput', 'music_style'],
         ['melodyOutput', 'music_melody'],
         ['chordsOutput', 'music_chords'],
       ];
@@ -697,7 +724,7 @@
     // ============================================================
     async function callGroq(messages, loadingId, btnId) {
       const loading = document.getElementById(loadingId);
-      const btn     = btnId ? document.getElementById(btnId) : null;
+      const btn = btnId ? document.getElementById(btnId) : null;
 
       loading.classList.add('active');
       if (btn) btn.disabled = true;
@@ -732,16 +759,15 @@
       const idea = document.getElementById('ideaInput').value.trim();
       if (!idea) { showToast('⚠️ Vui lòng nhập ý tưởng trước!'); return; }
 
-      const audience = document.getElementById('audience').value;
+      const audience = document.getElementById('audience').value || 'general';
       const audienceMap = {
-        kids:   'Thiếu nhi — ngôn từ đơn giản, vui tươi, dễ nhớ, có vần, chủ đề tích cực',
-        genz:   'Thanh thiếu niên (Gen Z) — hiện đại, tự nhiên, đôi khi đời thường, cảm xúc rõ ràng',
-        middle: 'Trung niên — chững chạc, sâu sắc, thực tế, giàu chiêm nghiệm',
-        elder:  'Người lớn tuổi — trữ tình, hoài niệm, văn phong nhạc xưa, thiết tha',
+        general: 'Mọi người — ngôn từ dễ hiểu, tự nhiên, phù hợp nhiều độ tuổi, giai điệu dễ nghe dễ nhớ, tránh slang và từ quá cổ',
+        kids: 'Thiếu nhi — ngôn từ đơn giản, vui tươi, dễ nhớ, có vần, chủ đề tích cực, lời nhạc ngắn, lặp lại, dễ hát theo',
+        genz: 'Thanh thiếu niên (Gen Z) — hiện đại, tự nhiên, đôi khi đời thường, cảm xúc rõ ràng, văn phong nhạc trẻ trung',
+        middle: 'Trung niên — chững chạc, sâu sắc, thực tế, giàu chiêm nghiệm, văn phong nhạc sâu lắng,
+        elder: 'Người lớn tuổi — trữ tình, hoài niệm, văn phong nhạc xưa, thiết tha',
       };
-      const audienceLine = audience && audienceMap[audience]
-        ? `\nĐối tượng nghe: ${audienceMap[audience]}`
-        : '';
+      const audienceLine = `\nĐối tượng nghe: ${audienceMap[audience]}`;
 
       const result = await callGroq([{
         role: 'user',
@@ -1017,12 +1043,12 @@ Chỉ xuất phần viết tiếp, không giải thích`
         return;
       }
 
-      const title    = document.getElementById('songTitle').value.trim() || 'Bài hát chưa đặt tên';
-      const idea     = document.getElementById('ideaInput').value.trim();
-      const melody   = document.getElementById('melodyOutput').value.trim();
-      const chords   = document.getElementById('chordsOutput').value.trim();
+      const title = document.getElementById('songTitle').value.trim() || 'Bài hát chưa đặt tên';
+      const idea = document.getElementById('ideaInput').value.trim();
+      const melody = document.getElementById('melodyOutput').value.trim();
+      const chords = document.getElementById('chordsOutput').value.trim();
       const audience = document.getElementById('audience').value;
-      const now      = new Date().toLocaleString('vi-VN');
+      const now = new Date().toLocaleString('vi-VN');
 
       const history = getHistory();
 
@@ -1052,16 +1078,16 @@ Chỉ xuất phần viết tiếp, không giải thích`
     }
 
     function loadHistory() {
-      const all       = getHistory();
-      const keyword   = (document.getElementById('searchHistory')?.value || '').toLowerCase().trim();
+      const all = getHistory();
+      const keyword = (document.getElementById('searchHistory')?.value || '').toLowerCase().trim();
       const container = document.getElementById('historyList');
       if (!container) return;
 
       const list = keyword
         ? all.filter(s =>
-            (s.title  || '').toLowerCase().includes(keyword) ||
-            (s.lyrics || '').toLowerCase().includes(keyword) ||
-            (s.idea   || '').toLowerCase().includes(keyword))
+          (s.title || '').toLowerCase().includes(keyword) ||
+          (s.lyrics || '').toLowerCase().includes(keyword) ||
+          (s.idea || '').toLowerCase().includes(keyword))
         : all;
 
       if (!all.length) {
@@ -1074,13 +1100,13 @@ Chỉ xuất phần viết tiếp, không giải thích`
       }
 
       container.innerHTML = list.map((song, i) => {
-        const isActive   = song.id === currentSongId;
+        const isActive = song.id === currentSongId;
         // Preview: lấy dòng đầu tiên có nội dung
-        const firstLine  = (song.lyrics || '').split('\n').find(l => l.trim()) || '';
-        const preview    = escHtml(firstLine.slice(0, 80) + (firstLine.length > 80 ? '…' : ''));
-        const dateStr    = escHtml(song.updatedAt || song.createdAt || '');
+        const firstLine = (song.lyrics || '').split('\n').find(l => l.trim()) || '';
+        const preview = escHtml(firstLine.slice(0, 80) + (firstLine.length > 80 ? '…' : ''));
+        const dateStr = escHtml(song.updatedAt || song.createdAt || '');
         // Tìm index thực trong `all` để đảm bảo delete/load đúng khi đang filter
-        const realIndex  = all.indexOf(song);
+        const realIndex = all.indexOf(song);
 
         return `
           <div class="history-item${isActive ? ' active' : ''}">
@@ -1105,11 +1131,11 @@ Chỉ xuất phần viết tiếp, không giải thích`
       if (!song) return;
 
       const fields = [
-        ['songTitle',    'music_title',   song.title  || ''],
-        ['ideaInput',    'music_idea',    song.idea   || ''],
-        ['lyricsOutput', 'music_lyrics',  song.lyrics || ''],
-        ['melodyOutput', 'music_melody',  song.melody || ''],
-        ['chordsOutput', 'music_chords',  song.chords || ''],
+        ['songTitle', 'music_title', song.title || ''],
+        ['ideaInput', 'music_idea', song.idea || ''],
+        ['lyricsOutput', 'music_lyrics', song.lyrics || ''],
+        ['melodyOutput', 'music_melody', song.melody || ''],
+        ['chordsOutput', 'music_chords', song.chords || ''],
       ];
       fields.forEach(([id, key, val]) => {
         document.getElementById(id).value = val;
@@ -1165,12 +1191,12 @@ Chỉ xuất phần viết tiếp, không giải thích`
     // ============================================================
     function exportJSON() {
       const data = {
-        title:      document.getElementById('songTitle').value.trim(),
-        idea:       document.getElementById('ideaInput').value.trim(),
-        lyrics:     document.getElementById('lyricsOutput').value.trim(),
-        melody:     document.getElementById('melodyOutput').value.trim(),
-        chords:     document.getElementById('chordsOutput').value.trim(),
-        audience:   document.getElementById('audience').value,
+        title: document.getElementById('songTitle').value.trim(),
+        idea: document.getElementById('ideaInput').value.trim(),
+        lyrics: document.getElementById('lyricsOutput').value.trim(),
+        melody: document.getElementById('melodyOutput').value.trim(),
+        chords: document.getElementById('chordsOutput').value.trim(),
+        audience: document.getElementById('audience').value,
         exportedAt: new Date().toLocaleString('vi-VN'),
       };
 
@@ -1178,8 +1204,8 @@ Chỉ xuất phần viết tiếp, không giải thích`
 
       const safeName = (data.title || 'bai-hat').replace(/[^\w\dÀ-ỹà-ỹ]/g, '_').replace(/_+/g, '_').replace(/^_|_$/g, '');
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url  = URL.createObjectURL(blob);
-      const a    = Object.assign(document.createElement('a'), { href: url, download: `${safeName}-export.json` });
+      const url = URL.createObjectURL(blob);
+      const a = Object.assign(document.createElement('a'), { href: url, download: `${safeName}-export.json` });
       a.click();
       URL.revokeObjectURL(url);
       showToast('⬇️ Đã xuất file JSON!');
@@ -1190,16 +1216,16 @@ Chỉ xuất phần viết tiếp, không giải thích`
       if (!file) return;
 
       const reader = new FileReader();
-      reader.onload = function(e) {
+      reader.onload = function (e) {
         try {
           const data = JSON.parse(e.target.result);
           if (!data.title || !data.lyrics) throw new Error('Invalid file');
           const fields = [
-            ['songTitle',    'music_title',    data.title],
-            ['ideaInput',    'music_idea',     data.idea],
-            ['lyricsOutput', 'music_lyrics',   data.lyrics],
-            ['melodyOutput', 'music_melody',   data.melody],
-            ['chordsOutput', 'music_chords',   data.chords],
+            ['songTitle', 'music_title', data.title],
+            ['ideaInput', 'music_idea', data.idea],
+            ['lyricsOutput', 'music_lyrics', data.lyrics],
+            ['melodyOutput', 'music_melody', data.melody],
+            ['chordsOutput', 'music_chords', data.chords],
           ];
           fields.forEach(([id, key, val]) => {
             if (val !== undefined && val !== null) {
